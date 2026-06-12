@@ -6,7 +6,11 @@ export const getBaseUrl = () => {
   }
   let url = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:4000";
   if (!url.startsWith("http://") && !url.startsWith("https://")) {
-    url = `https://${url}`;
+    if (url.includes(".internal")) {
+      url = `http://${url}`;
+    } else {
+      url = `https://${url}`;
+    }
   }
   return url;
 };
@@ -70,7 +74,7 @@ export async function apiGet(endpoint: string, options: RequestOptions = {}) {
   return apiFetch(endpoint, { ...options, method: "GET" });
 }
 
-export async function apiPost(endpoint: string, body?: any, options: RequestOptions = {}) {
+export async function apiPost(endpoint: string, body?: unknown, options: RequestOptions = {}) {
   return apiFetch(endpoint, {
     ...options,
     method: "POST",
@@ -78,7 +82,7 @@ export async function apiPost(endpoint: string, body?: any, options: RequestOpti
   });
 }
 
-export async function apiPut(endpoint: string, body?: any, options: RequestOptions = {}) {
+export async function apiPut(endpoint: string, body?: unknown, options: RequestOptions = {}) {
   return apiFetch(endpoint, {
     ...options,
     method: "PUT",
