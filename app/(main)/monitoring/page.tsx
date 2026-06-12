@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, Suspense } from "react";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { useRouter, useSearchParams } from "next/navigation";
 import { apiGet } from "@/lib/api";
@@ -46,7 +46,7 @@ interface WorkspaceOption {
   createdAt: string;
 }
 
-export default function MonitoringPage() {
+function MonitoringPageContent() {
   const { user, token, loading: authLoading } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -437,5 +437,22 @@ export default function MonitoringPage() {
 
       </div>
     </main>
+  );
+}
+
+export default function MonitoringPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center bg-[#0a0a0a]">
+          <div className="flex flex-col items-center gap-3">
+            <Loader2 className="h-8 w-8 animate-spin text-blue-400" />
+            <p className="text-xs text-white/40">Loading diagnostic metrics...</p>
+          </div>
+        </div>
+      }
+    >
+      <MonitoringPageContent />
+    </Suspense>
   );
 }
