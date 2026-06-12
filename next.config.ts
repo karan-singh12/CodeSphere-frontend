@@ -1,5 +1,10 @@
 import type { NextConfig } from "next";
 
+const getBackendUrl = () => {
+  let url = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:4000";
+  return url;
+};
+
 const nextConfig: NextConfig = {
   serverExternalPackages: [
     "@cline/sdk",
@@ -9,10 +14,11 @@ const nextConfig: NextConfig = {
     "@cline/shared",
   ],
   async rewrites() {
+    const backendUrl = getBackendUrl();
     return [
       {
         source: "/api/:path*",
-        destination: "http://127.0.0.1:4000/api/:path*", // Proxy API requests to Express
+        destination: `${backendUrl}/api/:path*`, // Proxy API requests to Express
       },
     ];
   },
