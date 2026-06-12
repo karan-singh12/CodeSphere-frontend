@@ -75,7 +75,10 @@ export default function ProjectsPage() {
     const specs = [];
     specs.push(`- **Frontend**: ${
       frontend === "react" ? "React (Vite)" :
+      frontend === "nextjs" ? "Next.js (App Router)" :
       frontend === "vue" ? "Vue 3" :
+      frontend === "nuxt" ? "Nuxt 3" :
+      frontend === "angular" ? "Angular 17+" :
       frontend === "svelte" ? "Svelte 4" :
       frontend === "static" ? "Static HTML/JS" : "Auto-Detect"
     }`);
@@ -179,7 +182,7 @@ export default function ProjectsPage() {
         <div className="dot-pattern absolute inset-0 opacity-[0.35]" />
       </div>
 
-      <div className="mx-auto max-w-5xl pt-16 relative z-10">
+      <div className="mx-auto max-w-5xl relative z-10">
         {/* Header */}
         <div className="mb-8 flex items-center justify-between">
           <div>
@@ -247,7 +250,10 @@ export default function ProjectsPage() {
                 >
                   <option value="auto">Auto-Detect</option>
                   <option value="react">React (Vite)</option>
+                  <option value="nextjs">Next.js (App Router)</option>
                   <option value="vue">Vue 3</option>
+                  <option value="nuxt">Nuxt 3</option>
+                  <option value="angular">Angular 17+</option>
                   <option value="svelte">Svelte 4</option>
                   <option value="static">Static HTML/JS</option>
                 </select>

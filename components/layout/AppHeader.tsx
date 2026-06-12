@@ -2,21 +2,20 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { Zap, ArrowRight, LogOut, User as UserIcon } from "lucide-react";
-import { PricingDialog } from "@/components/billing/PricingDialog";
+import { ArrowRight, LogOut, User as UserIcon } from "lucide-react";
 import { useAuth } from "@/components/auth/AuthProvider";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem,
   DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-const sky  = "#0096fe";
+const sky = "#0096fe";
 
 export function AppHeader() {
   const { user, logout } = useAuth();
 
   return (
-    <header className="sticky top-0 left-0 right-0 z-50 w-full p-2 pb-0 transition-all duration-300 font-sans">
+    <header className="fixed top-0 left-0 right-0 z-50 w-full p-2 pb-0 transition-all duration-300 font-sans">
       <nav className="mx-auto flex h-14 max-w-7xl items-center justify-between px-6 backdrop-blur-md transition-all duration-200 ease-in rounded-[18px] border border-white/8 bg-[#0a0a0a]/40">
         <Link href="/" className="flex items-center gap-2.5 select-none transition-all duration-300 hover:opacity-90">
           <Image src="/logo.png" alt="Code Sphere Logo" width={28} height={28} className="h-7 w-7 rounded-lg object-cover" />
@@ -39,12 +38,6 @@ export function AppHeader() {
         <div className="flex items-center gap-4">
           {user ? (
             <>
-              <PricingDialog>
-                <button className="group relative flex h-8 items-center gap-1.5 rounded-full px-3 text-xs transition-all duration-200 cursor-pointer border border-blue-500/20 bg-blue-500/5 text-[#0096fe] hover:bg-blue-500/12 hover:border-blue-500/30">
-                  <Zap className="h-3.5 w-3.5 fill-current" />
-                  <span className="font-medium">{user.credits} credits</span>
-                </button>
-              </PricingDialog>
 
               <DropdownMenu>
                 <DropdownMenuTrigger className="flex h-8 w-8 items-center justify-center rounded-full text-xs font-semibold cursor-pointer border border-blue-500/20 bg-blue-500/5 text-[#0096fe] hover:bg-blue-500/12 focus:outline-none">

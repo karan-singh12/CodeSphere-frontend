@@ -67,7 +67,7 @@ export default function WorkspaceContentComponent() {
   }
 
   return (
-    <div className="pt-16">
+    <div>
       <WorkspaceShell
         initialPrompt={prompt}
         workspace={workspace}
