@@ -1,7 +1,6 @@
 "use client";
 
-import { useState } from "react";
-import { ArrowRight, Check, Loader2 } from "lucide-react";
+import { ArrowRight, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,10 +13,8 @@ import {
 } from "@/components/ui/dialog";
 import { BlueTitle, GrayTitle } from "@/components/shared/BrandTypography";
 import { PRICING_PLANS } from "@/lib/constants";
-import { apiPost } from "@/lib/api";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { useRouter } from "next/navigation";
-import { toast } from "sonner";
 
 interface PricingDialogProps {
   children: React.ReactElement;
@@ -31,9 +28,8 @@ export function PricingDialog({
   children,
   reason = "upgrade",
 }: PricingDialogProps) {
-  const { user, token, refreshProfile } = useAuth();
+  const { user } = useAuth();
   const router = useRouter();
-  const [upgradingPlan, setUpgradingPlan] = useState<string | null>(null);
 
   const title =
     reason === "credits" ? "You're out of credits" : "Upgrade your plan";
@@ -50,29 +46,8 @@ export function PricingDialog({
 
   const activePlanKey = user ? user.plan : null;
 
-  const handleUpgrade = async (planKey: string) => {
-    if (!user) {
-      router.push("/sign-in");
-      return;
-    }
-
-    setUpgradingPlan(planKey);
-    try {
-      const res = await apiPost("/api/auth/upgrade", { plan: planKey }, { token });
-
-      const data = await res.json();
-      if (res.ok && data.success) {
-        toast.success(`Plan updated to ${planKey} successfully!`);
-        await refreshProfile();
-      } else {
-        toast.error(data.message || "Failed to update plan");
-      }
-    } catch (err) {
-      console.error(err);
-      toast.error("Failed to connect to backend server");
-    } finally {
-      setUpgradingPlan(null);
-    }
+  const handleUpgrade = () => {
+    router.push("/pricing");
   };
 
   return (
@@ -203,17 +178,15 @@ export function PricingDialog({
                     )
                   ) : (
                     <button
-                      disabled={upgradingPlan !== null}
-                      onClick={() => handleUpgrade(plan.key)}
+                      onClick={handleUpgrade}
                       className={cn(
-                        "inline-flex h-9 items-center justify-center gap-1.5 w-full rounded-full text-xs font-semibold transition-all cursor-pointer active:scale-95 text-white disabled:opacity-50",
+                        "inline-flex h-9 items-center justify-center gap-1.5 w-full rounded-full text-xs font-semibold transition-all cursor-pointer active:scale-95 text-white",
                         plan.featured
                           ? ""
                           : "border border-white/10 bg-transparent text-white/60 hover:bg-white/6 hover:text-white/90"
                       )}
                       style={plan.featured ? { background: grad, boxShadow: glow } : undefined}
                     >
-                      {upgradingPlan === plan.key && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
                       {isDowngrade ? "Downgrade" : "Upgrade"}
                       <ArrowRight className="h-3.5 w-3.5" />
                     </button>

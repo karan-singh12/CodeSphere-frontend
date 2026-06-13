@@ -12,6 +12,7 @@ interface User {
   imageUrl: string;
   credits: number;
   plan: string;
+  tokenUsage: number;
 }
 
 interface AuthContextType {

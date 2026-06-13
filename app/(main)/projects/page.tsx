@@ -69,61 +69,71 @@ export default function ProjectsPage() {
   const handleStartProject = () => {
     if (!prompt.trim()) return;
 
-    // Construct enriched structural prompt
     let enrichedPrompt = prompt.trim();
 
-    const specs = [];
-    specs.push(`- **Frontend**: ${
-      frontend === "react" ? "React (Vite)" :
-      frontend === "nextjs" ? "Next.js (App Router)" :
-      frontend === "vue" ? "Vue 3" :
-      frontend === "nuxt" ? "Nuxt 3" :
-      frontend === "angular" ? "Angular 17+" :
-      frontend === "svelte" ? "Svelte 4" :
-      frontend === "static" ? "Static HTML/JS" : "Auto-Detect"
-    }`);
-    specs.push(`- **Backend Services**: ${
-      backend === "express" ? "Express.js / Node.js API" :
-      backend === "fastapi" ? "Python FastAPI REST Server" :
-      backend === "go" ? "Go Fiber API Server" :
-      backend === "nestjs" ? "NestJS Enterprise Server" : "Serverless / None (Pure Frontend Client)"
-    }`);
-    specs.push(`- **Styling Solution**: ${
-      styling === "tailwind-shadcn" ? "Tailwind CSS + Shadcn UI components" :
-      styling === "tailwind-plain" ? "Tailwind CSS utility classes" :
-      styling === "vanilla" ? "Custom CSS Modules / Vanilla CSS" : "Bootstrap"
-    }`);
-    specs.push(`- **Theme & Vibe**: ${
-      theme === "midnight" ? "Midnight Glassmorphism (Vibrant blue highlights, dark transparent panes)" :
-      theme === "cyberpunk" ? "Cyberpunk Neon (Futuristic dark aesthetic, neon purple/cyan accents)" :
-      theme === "amber" ? "Amber Warmth (Soft dark mode, warm amber/yellow typography highlights)" :
-      theme === "light" ? "Clean Modern Light Mode (High contrast, minimalist white grids)" : "Stark Minimalist (Stark monochromatic black/white look)"
-    }`);
-    specs.push(`- **App Architecture**: ${
-      architecture === "spa" ? "Single Page Application (SPA)" :
-      architecture === "dashboard" ? "Multi-page Dashboard Shell (Sidebar + Subpages)" : "Multi-step Flow / Wizard Form"
-    }`);
-    specs.push(`- **Data & State Management**: ${
-      mocking === "mock-data" ? "Pre-populated Rich Mock Data (Realistic arrays/objects)" :
-      mocking === "localstorage" ? "LocalStorage state persistence (changes persist on page reload)" : "Empty / Minimal placeholder state"
-    }`);
+    if (frontend === "auto") {
+      enrichedPrompt += `\n\n### Product Specifications & Technical Stack:\n- **Frontend Framework**: Auto-Detect (AI will infer appropriate framework, styling, database schema, and product features based on the descriptive prompt)`;
+    } else {
+      const specs = [];
+      specs.push(`- **Frontend Framework**: ${
+        frontend === "react" ? "React (Vite)" :
+        frontend === "nextjs" ? "Next.js (App Router)" :
+        frontend === "vue" ? "Vue 3" :
+        frontend === "nuxt" ? "Nuxt 3" :
+        frontend === "angular" ? "Angular 17+" :
+        frontend === "svelte" ? "Svelte 4" :
+        frontend === "static" ? "Static HTML/JS Website (No Node/Python backend is allowed, pure frontend client)" : "Auto-Detect"
+      }`);
 
-    const selectedFeatures = [];
-    if (features.auth) selectedFeatures.push("User Authentication & Sessions (sign-in/sign-up components, JWT protection)");
-    if (features.db) selectedFeatures.push("Database & Persistent Storage (Mocked/Prisma integration ready, data persistence)");
-    if (features.charts) selectedFeatures.push("Interactive Charts & Data Analytics (visual data charts using Recharts)");
-    if (features.billing) selectedFeatures.push("Stripe Billing (pricing cards, checkout simulation, billing plans)");
-    if (features.chat) selectedFeatures.push("Realtime Messaging & Live Chat Sidebar");
+      const isStatic = frontend === "static";
+      const hasNoBackend = isStatic || backend === "none";
 
-    if (selectedFeatures.length > 0) {
-      specs.push(`- **Required Key Features**: \n  ${selectedFeatures.map(f => `  * ${f}`).join("\n")}`);
+      specs.push(`- **Backend Services**: ${
+        isStatic ? "None (Pure Static Client)" :
+        backend === "express" ? "Express.js / Node.js API" :
+        backend === "fastapi" ? "Python FastAPI REST Server" :
+        backend === "go" ? "Go Fiber API Server" :
+        backend === "nestjs" ? "NestJS Enterprise Server" : "Serverless / None (Pure Frontend Client)"
+      }`);
+
+      specs.push(`- **Styling Solution**: ${
+        styling === "tailwind-shadcn" ? "Tailwind CSS + Shadcn UI components" :
+        styling === "tailwind-plain" ? "Tailwind CSS utility classes" :
+        styling === "vanilla" ? "Custom CSS Modules / Vanilla CSS" : "Bootstrap"
+      }`);
+
+      specs.push(`- **Theme & Vibe**: ${
+        theme === "midnight" ? "Midnight Glassmorphism (Vibrant blue highlights, dark transparent panes)" :
+        theme === "cyberpunk" ? "Cyberpunk Neon (Futuristic dark aesthetic, neon purple/cyan accents)" :
+        theme === "amber" ? "Amber Warmth (Soft dark mode, warm amber/yellow typography highlights)" :
+        theme === "light" ? "Clean Modern Light Mode (High contrast, minimalist white grids)" : "Stark Minimalist (Stark monochromatic black/white look)"
+      }`);
+
+      specs.push(`- **App Architecture**: ${
+        architecture === "spa" ? "Single Page Application (SPA)" :
+        architecture === "dashboard" ? "Multi-page Dashboard Shell (Sidebar + Subpages)" : "Multi-step Flow / Wizard Form"
+      }`);
+
+      specs.push(`- **Data & State Management**: ${
+        mocking === "mock-data" ? "Pre-populated Rich Mock Data (Realistic arrays/objects)" :
+        mocking === "localstorage" ? "LocalStorage state persistence (changes persist on page reload)" : "Empty / Minimal placeholder state"
+      }`);
+
+      const selectedFeatures = [];
+      if (features.auth && !hasNoBackend) selectedFeatures.push("User Authentication & Sessions (sign-in/sign-up components, JWT protection)");
+      if (features.db && !hasNoBackend) selectedFeatures.push("Database & Persistent Storage (Mocked/Prisma integration ready, data persistence)");
+      if (features.charts) selectedFeatures.push("Interactive Charts & Data Analytics (visual data charts using Recharts)");
+      if (features.billing && !hasNoBackend) selectedFeatures.push("Stripe Billing (pricing cards, checkout simulation, billing plans)");
+      if (features.chat && !hasNoBackend) selectedFeatures.push("Realtime Messaging & Live Chat Sidebar");
+
+      if (selectedFeatures.length > 0) {
+        specs.push(`- **Required Key Features**: \n  ${selectedFeatures.map(f => `  * ${f}`).join("\n")}`);
+      }
+
+      enrichedPrompt += `\n\n### Product Specifications & Technical Stack:\n${specs.join("\n")}`;
     }
 
-    enrichedPrompt += `\n\n### Product Specifications & Technical Stack:\n${specs.join("\n")}`;
-
-    // Pass frontend template to workspace query
     const workspaceTemplate = frontend === "auto" ? "react" : frontend;
-
     router.push(`/workspace?prompt=${encodeURIComponent(enrichedPrompt)}&template=${workspaceTemplate}`);
   };
 
@@ -168,6 +178,10 @@ export default function ProjectsPage() {
   if (!user) {
     return null; // Will redirect in useEffect
   }
+
+  const isAuto = frontend === "auto";
+  const isStatic = frontend === "static";
+  const isBackendNone = backend === "none" || isStatic;
 
   return (
     <main className="min-h-screen px-4 py-10 selection:bg-white/20 relative overflow-hidden" style={{ background: bgGradient }}>
@@ -245,7 +259,28 @@ export default function ProjectsPage() {
                 <label className="text-xs font-semibold text-white/50">Frontend Framework</label>
                 <select
                   value={frontend}
-                  onChange={(e) => setFrontend(e.target.value)}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setFrontend(val);
+                    if (val === "static") {
+                      setBackend("none");
+                      setFeatures(prev => ({
+                        ...prev,
+                        auth: false,
+                        db: false,
+                        billing: false,
+                        chat: false
+                      }));
+                    } else if (val === "auto") {
+                      setFeatures({
+                        auth: false,
+                        db: false,
+                        charts: false,
+                        billing: false,
+                        chat: false
+                      });
+                    }
+                  }}
                   className="w-full h-10 rounded-xl border border-white/8 bg-[#161616] px-3 text-sm text-white focus:outline-none focus:border-blue-500/50 cursor-pointer"
                 >
                   <option value="auto">Auto-Detect</option>
@@ -260,11 +295,27 @@ export default function ProjectsPage() {
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-white/50">Backend Framework</label>
+                <label className={cn("text-xs font-semibold transition-colors duration-200", (isAuto || isStatic) ? "text-white/20" : "text-white/50")}>Backend Framework</label>
                 <select
-                  value={backend}
-                  onChange={(e) => setBackend(e.target.value)}
-                  className="w-full h-10 rounded-xl border border-white/8 bg-[#161616] px-3 text-sm text-white focus:outline-none focus:border-blue-500/50 cursor-pointer"
+                  value={isStatic ? "none" : backend}
+                  disabled={isAuto || isStatic}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setBackend(val);
+                    if (val === "none") {
+                      setFeatures(prev => ({
+                        ...prev,
+                        auth: false,
+                        db: false,
+                        billing: false,
+                        chat: false
+                      }));
+                    }
+                  }}
+                  className={cn(
+                    "w-full h-10 rounded-xl border border-white/8 bg-[#161616] px-3 text-sm text-white focus:outline-none focus:border-blue-500/50 cursor-pointer transition-all duration-200",
+                    (isAuto || isStatic) && "opacity-35 cursor-not-allowed border-white/4 bg-white/2 text-white/30"
+                  )}
                 >
                   <option value="express">Express.js / Node</option>
                   <option value="fastapi">Python FastAPI</option>
@@ -275,11 +326,15 @@ export default function ProjectsPage() {
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-white/50">UI & Styling</label>
+                <label className={cn("text-xs font-semibold transition-colors duration-200", isAuto ? "text-white/20" : "text-white/50")}>UI & Styling</label>
                 <select
                   value={styling}
+                  disabled={isAuto}
                   onChange={(e) => setStyling(e.target.value)}
-                  className="w-full h-10 rounded-xl border border-white/8 bg-[#161616] px-3 text-sm text-white focus:outline-none focus:border-blue-500/50 cursor-pointer"
+                  className={cn(
+                    "w-full h-10 rounded-xl border border-white/8 bg-[#161616] px-3 text-sm text-white focus:outline-none focus:border-blue-500/50 cursor-pointer transition-all duration-200",
+                    isAuto && "opacity-35 cursor-not-allowed border-white/4 bg-white/2 text-white/30"
+                  )}
                 >
                   <option value="tailwind-shadcn">Tailwind + Shadcn</option>
                   <option value="tailwind-plain">Plain Tailwind</option>
@@ -289,11 +344,15 @@ export default function ProjectsPage() {
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-white/50">Design Theme & Vibe</label>
+                <label className={cn("text-xs font-semibold transition-colors duration-200", isAuto ? "text-white/20" : "text-white/50")}>Design Theme & Vibe</label>
                 <select
                   value={theme}
+                  disabled={isAuto}
                   onChange={(e) => setTheme(e.target.value)}
-                  className="w-full h-10 rounded-xl border border-white/8 bg-[#161616] px-3 text-sm text-white focus:outline-none focus:border-blue-500/50 cursor-pointer"
+                  className={cn(
+                    "w-full h-10 rounded-xl border border-white/8 bg-[#161616] px-3 text-sm text-white focus:outline-none focus:border-blue-500/50 cursor-pointer transition-all duration-200",
+                    isAuto && "opacity-35 cursor-not-allowed border-white/4 bg-white/2 text-white/30"
+                  )}
                 >
                   <option value="midnight">Midnight Glassmorphism</option>
                   <option value="cyberpunk">Cyberpunk Neon</option>
@@ -304,11 +363,15 @@ export default function ProjectsPage() {
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-white/50">App Architecture</label>
+                <label className={cn("text-xs font-semibold transition-colors duration-200", isAuto ? "text-white/20" : "text-white/50")}>App Architecture</label>
                 <select
                   value={architecture}
+                  disabled={isAuto}
                   onChange={(e) => setArchitecture(e.target.value)}
-                  className="w-full h-10 rounded-xl border border-white/8 bg-[#161616] px-3 text-sm text-white focus:outline-none focus:border-blue-500/50 cursor-pointer"
+                  className={cn(
+                    "w-full h-10 rounded-xl border border-white/8 bg-[#161616] px-3 text-sm text-white focus:outline-none focus:border-blue-500/50 cursor-pointer transition-all duration-200",
+                    isAuto && "opacity-35 cursor-not-allowed border-white/4 bg-white/2 text-white/30"
+                  )}
                 >
                   <option value="spa">Single Page App</option>
                   <option value="dashboard">Multi-page Dashboard</option>
@@ -317,11 +380,15 @@ export default function ProjectsPage() {
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-white/50">State & Mocking</label>
+                <label className={cn("text-xs font-semibold transition-colors duration-200", isAuto ? "text-white/20" : "text-white/50")}>State & Mocking</label>
                 <select
                   value={mocking}
+                  disabled={isAuto}
                   onChange={(e) => setMocking(e.target.value)}
-                  className="w-full h-10 rounded-xl border border-white/8 bg-[#161616] px-3 text-sm text-white focus:outline-none focus:border-blue-500/50 cursor-pointer"
+                  className={cn(
+                    "w-full h-10 rounded-xl border border-white/8 bg-[#161616] px-3 text-sm text-white focus:outline-none focus:border-blue-500/50 cursor-pointer transition-all duration-200",
+                    isAuto && "opacity-35 cursor-not-allowed border-white/4 bg-white/2 text-white/30"
+                  )}
                 >
                   <option value="mock-data">Pre-populated Mock Data</option>
                   <option value="localstorage">LocalStorage Persistence</option>
@@ -332,19 +399,21 @@ export default function ProjectsPage() {
 
             {/* Checkbox badge toggles for product features */}
             <div className="space-y-2">
-              <label className="text-xs font-semibold text-white/50">Core Product Features</label>
+              <label className={cn("text-xs font-semibold transition-colors duration-200", isAuto ? "text-white/20" : "text-white/50")}>Core Product Features</label>
               <div className="flex flex-wrap gap-2">
                 {[
-                  { id: "auth", name: "User Auth" },
-                  { id: "db", name: "Database Storage" },
-                  { id: "charts", name: "Charts & Analytics" },
-                  { id: "billing", name: "Stripe Billing" },
-                  { id: "chat", name: "Realtime Chat" },
+                  { id: "auth", name: "User Auth", backendRequired: true },
+                  { id: "db", name: "Database Storage", backendRequired: true },
+                  { id: "charts", name: "Charts & Analytics", backendRequired: false },
+                  { id: "billing", name: "Stripe Billing", backendRequired: true },
+                  { id: "chat", name: "Realtime Chat", backendRequired: true },
                 ].map((feature) => {
                   const isActive = features[feature.id as keyof typeof features];
+                  const isDisabled = isAuto || (feature.backendRequired && isBackendNone);
                   return (
                     <button
                       key={feature.id}
+                      disabled={isDisabled}
                       onClick={() =>
                         setFeatures((prev) => ({
                           ...prev,
@@ -353,7 +422,9 @@ export default function ProjectsPage() {
                       }
                       className={cn(
                         "px-3.5 py-2 rounded-full text-xs font-medium border cursor-pointer transition-all duration-200 active:scale-95",
-                        isActive
+                        isDisabled
+                          ? "border-white/4 bg-transparent text-white/15 cursor-not-allowed"
+                          : isActive
                           ? "border-[#0096fe] bg-[#0096fe]/15 text-white shadow-[0_0_12px_rgba(0,150,254,0.25)]"
                           : "border-white/8 bg-white/4 text-white/55 hover:border-white/15 hover:bg-white/6 hover:text-white/80"
                       )}

@@ -41,9 +41,9 @@ export function ProjectGrid({ projects, onDelete }: ProjectGridProps) {
             <div className="mb-2 flex items-start justify-between gap-2">
               <p className="line-clamp-1 text-sm font-medium leading-snug text-white/80">{title}</p>
               <DeleteProjectDialog project={project} onDelete={onDelete}>
-                <span className="relative z-10 text-white/20 hover:text-red-400 cursor-pointer transition-colors">
+                <button type="button" className="relative z-10 text-white/20 hover:text-red-400 cursor-pointer transition-colors focus:outline-none bg-transparent p-0 border-0 outline-none">
                   <Trash2 className="h-3.5 w-3.5" />
-                </span>
+                </button>
               </DeleteProjectDialog>
             </div>
 

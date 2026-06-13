@@ -1,10 +1,19 @@
 import { toast } from "sonner";
 
 export const getBaseUrl = () => {
+  let url = process.env.NEXT_PUBLIC_API_URL || "";
+
   if (typeof window !== "undefined") {
+    if (url) {
+      if (!url.startsWith("http://") && !url.startsWith("https://")) {
+        url = `https://${url}`;
+      }
+      return url;
+    }
     return "";
   }
-  let url = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:4000";
+
+  url = url || "http://127.0.0.1:4000";
   if (!url.startsWith("http://") && !url.startsWith("https://")) {
     if (url.includes(".internal")) {
       url = `http://${url}`;

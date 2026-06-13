@@ -1,10 +1,9 @@
 import type { NextConfig } from "next";
 
 const getBackendUrl = () => {
-  let url = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:4000";
+  let url = (process.env.NEXT_PUBLIC_API_URL || "").trim() || "http://127.0.0.1:4000";
   if (!url.startsWith("http://") && !url.startsWith("https://")) {
     url = `https://${url}`;
-
   }
   return url;
 };

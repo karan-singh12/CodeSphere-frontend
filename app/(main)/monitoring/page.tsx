@@ -101,7 +101,7 @@ function MonitoringPageContent() {
         const data = await res.json();
         setWorkspaces(data.data || []);
       }
-    } catch {}
+    } catch { }
   }, [token]);
 
   useEffect(() => {
@@ -148,17 +148,44 @@ function MonitoringPageContent() {
     healthScore > 85
       ? "text-emerald-400"
       : healthScore > 60
-      ? "text-amber-400"
-      : "text-rose-400";
+        ? "text-amber-400"
+        : "text-rose-400";
 
   const selectedWorkspace = workspaces.find((w) => w.id === selectedWorkspaceId);
   const scopeLabel = selectedWorkspace
     ? selectedWorkspace.title || `Project ${selectedWorkspace.id.slice(0, 6)}`
     : "All Projects";
 
+  const bgGradient = "radial-gradient(circle at 50% 0%, rgba(0, 150, 254, 0.12) 0%, transparent 60%), radial-gradient(ellipse 70% 60% at 50% 100%, rgba(0, 150, 254, 0.22) 0%, transparent 100%)";
+
+  const getProviderGradient = (provider: string) => {
+    const name = provider.toLowerCase();
+    if (name.includes("gemini") || name.includes("google")) {
+      return "from-blue-500 to-indigo-500";
+    }
+    if (name.includes("openai")) {
+      return "from-violet-500 to-purple-500";
+    }
+    if (name.includes("claude") || name.includes("anthropic") || name.includes("claud")) {
+      return "from-amber-500 to-orange-500";
+    }
+    return "from-blue-500 to-indigo-500";
+  };
+
   return (
-    <main className="min-h-[calc(100vh-4rem)] bg-[#0a0a0a] text-white px-4 py-8 select-none">
-      <div className="mx-auto max-w-7xl">
+    <div className="min-h-screen px-4 py-8 relative overflow-hidden" style={{ background: bgGradient }}>
+      {/* Ambient backgrounds */}
+      <div className="pointer-events-none fixed inset-0 overflow-hidden z-0">
+        <div className="animate-float-orb absolute -top-40 left-[30%] h-[600px] w-[600px] rounded-full blur-3xl"
+          style={{ background: "rgba(0, 150, 254, 0.10)" }} />
+        <div className="animate-float-orb-delayed absolute top-1/3 -right-32 h-96 w-96 rounded-full blur-3xl"
+          style={{ background: "rgba(0, 150, 254, 0.08)" }} />
+        <div className="animate-float-orb-slow absolute bottom-1/4 -left-24 h-80 w-80 rounded-full blur-3xl"
+          style={{ background: "rgba(0, 150, 254, 0.07)" }} />
+        <div className="dot-pattern absolute inset-0 opacity-[0.35]" />
+      </div>
+
+      <div className="mx-auto max-w-7xl relative z-10 select-none">
 
         {/* Page Title & Actions */}
         <div className="mb-8 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
@@ -176,7 +203,7 @@ function MonitoringPageContent() {
             <div className="relative">
               <button
                 onClick={() => setDropdownOpen((v) => !v)}
-                className="inline-flex h-9 items-center gap-2 rounded-full border border-white/10 bg-white/4 px-4 text-xs font-medium hover:bg-white/8 transition-colors cursor-pointer"
+                className="inline-flex h-9 items-center gap-2 rounded-full border border-white/10 bg-[#0a0a0a]/60 backdrop-blur-md px-4 text-xs font-medium hover:bg-white/8 transition-colors cursor-pointer"
               >
                 <FolderOpen className="h-3.5 w-3.5 text-blue-400" />
                 <span className="text-white/70 max-w-[140px] truncate">{scopeLabel}</span>
@@ -185,14 +212,13 @@ function MonitoringPageContent() {
 
               {dropdownOpen && (
                 <div
-                  className="absolute right-0 top-full mt-1.5 z-50 min-w-[220px] rounded-xl border border-white/10 bg-[#141414] shadow-xl overflow-hidden"
+                  className="absolute right-0 top-full mt-1.5 z-50 min-w-[220px] rounded-xl border border-white/10 bg-[#0d0d0d] backdrop-blur-md shadow-2xl overflow-hidden animate-in fade-in-0 duration-100"
                 >
                   {/* All projects option */}
                   <button
                     onClick={() => handleWorkspaceChange("")}
-                    className={`w-full flex items-center gap-2.5 px-4 py-2.5 text-xs text-left hover:bg-white/6 transition-colors ${
-                      !selectedWorkspaceId ? "text-blue-400" : "text-white/70"
-                    }`}
+                    className={`w-full flex items-center gap-2.5 px-4 py-2.5 text-xs text-left hover:bg-white/6 transition-colors ${!selectedWorkspaceId ? "text-blue-400" : "text-white/70"
+                      }`}
                   >
                     <Activity className="h-3.5 w-3.5 shrink-0" />
                     All Projects
@@ -205,9 +231,8 @@ function MonitoringPageContent() {
                       <button
                         key={ws.id}
                         onClick={() => handleWorkspaceChange(ws.id)}
-                        className={`w-full flex items-center gap-2.5 px-4 py-2.5 text-xs text-left hover:bg-white/6 transition-colors truncate ${
-                          selectedWorkspaceId === ws.id ? "text-blue-400" : "text-white/70"
-                        }`}
+                        className={`w-full flex items-center gap-2.5 px-4 py-2.5 text-xs text-left hover:bg-white/6 transition-colors truncate ${selectedWorkspaceId === ws.id ? "text-blue-400" : "text-white/70"
+                          }`}
                       >
                         <FolderOpen className="h-3.5 w-3.5 shrink-0" />
                         <span className="truncate">
@@ -223,7 +248,7 @@ function MonitoringPageContent() {
             <button
               onClick={handleRefresh}
               disabled={refreshing}
-              className="inline-flex h-9 items-center gap-1.5 rounded-full border border-white/10 bg-white/4 px-4 text-xs font-semibold hover:bg-white/8 transition-colors disabled:opacity-50 cursor-pointer"
+              className="inline-flex h-9 items-center gap-1.5 rounded-full border border-white/10 bg-[#0a0a0a]/60 backdrop-blur-md px-4 text-xs font-semibold hover:bg-white/8 transition-colors disabled:opacity-50 cursor-pointer"
             >
               <RefreshCw className={`h-3.5 w-3.5 ${refreshing ? "animate-spin" : ""}`} />
               Refresh
@@ -247,23 +272,23 @@ function MonitoringPageContent() {
 
         {/* Summary Cards */}
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-8">
-          <div className="rounded-xl border border-white/8 bg-[#111] p-5">
+          <div className="rounded-2xl border border-white/8 bg-[#0a0a0a]/60 backdrop-blur-md p-5 shadow-xl">
             <div className="flex items-center justify-between mb-3 text-white/40">
               <span className="text-xs font-medium uppercase tracking-wider">Total Requests</span>
               <Activity className="h-4 w-4 text-blue-400" />
             </div>
-            <p className="text-3xl font-bold">{summary?.totalRequests ?? 0}</p>
+            <p className="text-3xl font-bold text-blue-400">{summary?.totalRequests ?? 0}</p>
             <p className="text-[10px] text-white/25 mt-1">
               {selectedWorkspaceId ? "For this project" : "Across all projects"}
             </p>
           </div>
 
-          <div className="rounded-xl border border-white/8 bg-[#111] p-5">
+          <div className="rounded-2xl border border-white/8 bg-[#0a0a0a]/60 backdrop-blur-md p-5 shadow-xl">
             <div className="flex items-center justify-between mb-3 text-white/40">
               <span className="text-xs font-medium uppercase tracking-wider">Total Tokens</span>
               <Cpu className="h-4 w-4 text-violet-400" />
             </div>
-            <p className="text-3xl font-bold">
+            <p className="text-3xl font-bold text-violet-400">
               {summary?.totalTokens
                 ? (summary.totalTokens / 1000).toFixed(1)
                 : "0.0"}k
@@ -273,12 +298,12 @@ function MonitoringPageContent() {
             </p>
           </div>
 
-          <div className="rounded-xl border border-white/8 bg-[#111] p-5">
+          <div className="rounded-2xl border border-white/8 bg-[#0a0a0a]/60 backdrop-blur-md p-5 shadow-xl">
             <div className="flex items-center justify-between mb-3 text-white/40">
               <span className="text-xs font-medium uppercase tracking-wider">Avg Latency</span>
               <Clock className="h-4 w-4 text-amber-400" />
             </div>
-            <p className="text-3xl font-bold">
+            <p className="text-3xl font-bold text-amber-400">
               {summary?.averageLatency
                 ? (summary.averageLatency / 1000).toFixed(2)
                 : "0.00"}s
@@ -286,7 +311,7 @@ function MonitoringPageContent() {
             <p className="text-[10px] text-white/25 mt-1">Avg response completion time</p>
           </div>
 
-          <div className="rounded-xl border border-white/8 bg-[#111] p-5">
+          <div className="rounded-2xl border border-white/8 bg-[#0a0a0a]/60 backdrop-blur-md p-5 shadow-xl">
             <div className="flex items-center justify-between mb-3 text-white/40">
               <span className="text-xs font-medium uppercase tracking-wider">System Health</span>
               <Database className="h-4 w-4 text-emerald-400" />
@@ -301,14 +326,14 @@ function MonitoringPageContent() {
         {/* Charts */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
           {/* Request Volume */}
-          <div className="lg:col-span-2 rounded-xl border border-white/8 bg-[#111] p-5 flex flex-col">
+          <div className="lg:col-span-2 rounded-2xl border border-white/8 bg-[#0a0a0a]/60 backdrop-blur-md p-5 flex flex-col shadow-xl">
             <div className="mb-4">
               <h3 className="text-sm font-semibold text-white/90">Request Volume Trends</h3>
               <p className="text-[10px] text-white/30">
                 Daily prompt count — {selectedWorkspaceId ? scopeLabel : "all projects"} — last 30 days
               </p>
             </div>
-            <div className="flex-1 min-h-[200px] relative mt-2 flex items-end justify-between border-b border-l border-white/10 pb-2 pl-2">
+            <div className="flex-1 min-h-[200px] relative mt-2 flex items-end gap-[3px] border-b border-l border-white/10 pb-2 pl-2">
               {dailyRequests.length === 0 ? (
                 <div className="absolute inset-0 flex items-center justify-center text-xs text-white/20">
                   No request data collected yet.
@@ -316,6 +341,7 @@ function MonitoringPageContent() {
               ) : (
                 dailyRequests.map((r, idx) => {
                   const percent = (r.count / maxRequests) * 100;
+                  const isLast = idx === dailyRequests.length - 1;
                   return (
                     <div key={idx} className="flex-1 flex flex-col items-center group px-0.5 relative">
                       <div className="absolute bottom-[105%] bg-black/90 border border-white/10 px-2 py-1 rounded text-[10px] text-white hidden group-hover:block z-10 pointer-events-none whitespace-nowrap">
@@ -323,8 +349,26 @@ function MonitoringPageContent() {
                         <p className="text-[8px] text-white/45">{r.day}</p>
                       </div>
                       <div
-                        className="w-full bg-gradient-to-t from-blue-600 to-blue-400 rounded-t group-hover:from-blue-500 group-hover:to-cyan-400 transition-colors"
-                        style={{ height: `${Math.max(percent, 4)}%`, minHeight: "4px" }}
+                        className="w-full rounded-t transition-all duration-300"
+                        style={{
+                          height: `${Math.max(percent, 4)}%`,
+                          minHeight: "4px",
+                          background: isLast
+                            ? "linear-gradient(to top, #0096fe, #38bdf8)"
+                            : "rgba(0, 150, 254, 0.25)",
+                        }}
+                        onMouseEnter={(e) => {
+                          const el = e.currentTarget as HTMLElement;
+                          if (!isLast) {
+                            el.style.background = "linear-gradient(to top, #0096fe, #38bdf8)";
+                          }
+                        }}
+                        onMouseLeave={(e) => {
+                          const el = e.currentTarget as HTMLElement;
+                          if (!isLast) {
+                            el.style.background = "rgba(0, 150, 254, 0.25)";
+                          }
+                        }}
                       />
                     </div>
                   );
@@ -332,14 +376,14 @@ function MonitoringPageContent() {
               )}
             </div>
             <div className="flex justify-between text-[9px] text-white/20 mt-1.5 px-1">
-              <span>{dailyRequests[dailyRequests.length - 1]?.day || ""}</span>
-              <span>Daily Request Inferences</span>
               <span>{dailyRequests[0]?.day || ""}</span>
+              <span>Daily Request Inferences</span>
+              <span>{dailyRequests[dailyRequests.length - 1]?.day || ""}</span>
             </div>
           </div>
 
           {/* Provider Usage */}
-          <div className="rounded-xl border border-white/8 bg-[#111] p-5 flex flex-col">
+          <div className="rounded-2xl border border-white/8 bg-[#0a0a0a]/60 backdrop-blur-md p-5 flex flex-col shadow-xl">
             <div className="mb-4">
               <h3 className="text-sm font-semibold text-white/90">Inference Providers</h3>
               <p className="text-[10px] text-white/30">Requests and token share by LLM provider</p>
@@ -354,6 +398,7 @@ function MonitoringPageContent() {
                   const sharePercent = summary?.totalRequests
                     ? (p.requests / summary.totalRequests) * 100
                     : 0;
+                  const gradientClass = getProviderGradient(p.provider);
                   return (
                     <div key={idx} className="space-y-1.5">
                       <div className="flex justify-between text-xs">
@@ -364,7 +409,7 @@ function MonitoringPageContent() {
                       </div>
                       <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden">
                         <div
-                          className="h-full bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full"
+                          className={`h-full bg-gradient-to-r ${gradientClass} rounded-full`}
                           style={{ width: `${sharePercent}%` }}
                         />
                       </div>
@@ -379,14 +424,14 @@ function MonitoringPageContent() {
           </div>
 
           {/* Latency Trends */}
-          <div className="lg:col-span-3 rounded-xl border border-white/8 bg-[#111] p-5 flex flex-col">
-            <div className="mb-4">
+          <div className="lg:col-span-3 rounded-2xl border border-white/8 bg-[#0a0a0a]/60 backdrop-blur-md p-4 flex flex-col shadow-xl">
+            <div className="mb-3">
               <h3 className="text-sm font-semibold text-white/90">Latency Trends</h3>
               <p className="text-[10px] text-white/30">
                 Average time to complete generation stream (ms) — {selectedWorkspaceId ? scopeLabel : "all projects"}
               </p>
             </div>
-            <div className="flex-1 min-h-[160px] relative border-b border-l border-white/10 pb-2 pl-2">
+            <div className="h-[200px] relative border-b border-l border-white/10 pb-2 pl-2">
               {latencyTrends.length === 0 ? (
                 <div className="absolute inset-0 flex items-center justify-center text-xs text-white/20">
                   No latency records available.
@@ -403,7 +448,7 @@ function MonitoringPageContent() {
                     <path
                       d={`M 0 100 ${latencyTrends
                         .map((t, idx) => {
-                          const x = (idx / (latencyTrends.length - 1)) * 100;
+                          const x = latencyTrends.length > 1 ? (idx / (latencyTrends.length - 1)) * 100 : 50;
                           const y = 100 - (t.avg_latency / maxLatency) * 80;
                           return `L ${x} ${y}`;
                         })
@@ -413,7 +458,7 @@ function MonitoringPageContent() {
                     <path
                       d={latencyTrends
                         .map((t, idx) => {
-                          const x = (idx / (latencyTrends.length - 1)) * 100;
+                          const x = latencyTrends.length > 1 ? (idx / (latencyTrends.length - 1)) * 100 : 50;
                           const y = 100 - (t.avg_latency / maxLatency) * 80;
                           return `${idx === 0 ? "M" : "L"} ${x} ${y}`;
                         })
@@ -428,15 +473,15 @@ function MonitoringPageContent() {
               )}
             </div>
             <div className="flex justify-between text-[9px] text-white/20 mt-1.5 px-1">
-              <span>{latencyTrends[latencyTrends.length - 1]?.day || ""}</span>
-              <span>Avg Latency (max: {maxLatency}ms)</span>
               <span>{latencyTrends[0]?.day || ""}</span>
+              <span>Avg Latency (max: {maxLatency}ms)</span>
+              <span>{latencyTrends[latencyTrends.length - 1]?.day || ""}</span>
             </div>
           </div>
         </div>
 
       </div>
-    </main>
+    </div>
   );
 }
 
